@@ -62,7 +62,7 @@
 
       # Any custom package config you would like to do.
       extra_pkg_config = {
-        allow_unfree = true;
+        allowUnfree = true;
       };
 
       configuration =
@@ -122,20 +122,24 @@
             #   ]
             # ))
 
+            mini-ai
+            mini-icons
+            mini-pairs
+
             # sometimes you have to fix some names
             # { plugin = catppuccin-nvim; name = "catppuccin"; }
-            {
-              plugin = mini-ai;
-              name = "mini.ai";
-            }
-            {
-              plugin = mini-icons;
-              name = "mini.icons";
-            }
-            {
-              plugin = mini-pairs;
-              name = "mini.pairs";
-            }
+            # {
+            #   plugin = mini-ai;
+            #   name = "mini.ai";
+            # }
+            # {
+            #   plugin = mini-icons;
+            #   name = "mini.icons";
+            # }
+            # {
+            #   plugin = mini-pairs;
+            #   name = "mini.pairs";
+            # }
             # you could do this within the lazy spec instead if you wanted
             # and get the new names from `:NixCats pawsible` debug command
           ];
