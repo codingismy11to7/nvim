@@ -70,65 +70,76 @@
       };
 
       configuration =
+        theme:
         { pkgs, system, ... }:
         let
           patchUtils = nixPatch.patchUtils.${pkgs.stdenv.hostPlatform.system};
         in
         {
           # The path to your neovim configuration.
-          luaPath = ./.;
+          luaPath =
+            if theme != null then
+              pkgs.runCommand "nvim-config" { } ''
+                cp -r ${./.} $out
+                chmod -R u+w $out
+                cp ${pkgs.writeText "theme.lua" theme.content} $out/lua/plugins/theme.lua
+              ''
+            else
+              ./.;
 
           # Plugins you use in your configuration.
-          plugins = with pkgs.vimPlugins; [
-            # LazyVim
-            lazy-nvim
-            LazyVim
-            bufferline-nvim
-            lazydev-nvim
-            copilot-vim
-            conform-nvim
-            flash-nvim
-            friendly-snippets
-            gitsigns-nvim
-            grug-far-nvim
-            noice-nvim
-            lualine-nvim
-            mini-files
-            mini-hipatterns
-            nui-nvim
-            nvim-lint
-            nvim-lspconfig
-            nvim-ts-autotag
-            ts-comments-nvim
-            blink-pkg
-            nvim-web-devicons
-            persistence-nvim
-            plenary-nvim
-            telescope-fzf-native-nvim
-            telescope-nvim
-            todo-comments-nvim
-            tokyonight-nvim
-            trouble-nvim
-            vim-illuminate
-            vim-startuptime
-            which-key-nvim
-            snacks-nvim
-            zellij-nvim
-            nvim-treesitter-context
-            nvim-treesitter-textobjects
-            nvim-treesitter.withAllGrammars
-            # This is for if you only want some of the grammars
-            # (nvim-treesitter.withPlugins (
-            #   plugins: with plugins; [
-            #     nix
-            #     lua
-            #   ]
-            # ))
+          plugins =
+            (with pkgs.vimPlugins; [
+              # LazyVim
+              lazy-nvim
+              LazyVim
+              bufferline-nvim
+              lazydev-nvim
+              copilot-vim
+              conform-nvim
+              flash-nvim
+              friendly-snippets
+              gitsigns-nvim
+              grug-far-nvim
+              noice-nvim
+              lualine-nvim
+              mini-files
+              mini-hipatterns
+              nui-nvim
+              nvim-lint
+              nvim-lspconfig
+              nvim-ts-autotag
+              ts-comments-nvim
+              blink-cmp
+              nvim-web-devicons
+              persistence-nvim
+              plenary-nvim
+              telescope-fzf-native-nvim
+              telescope-nvim
+              todo-comments-nvim
+              tokyonight-nvim
+              trouble-nvim
+              vim-illuminate
+              vim-startuptime
+              which-key-nvim
+              snacks-nvim
+              zellij-nvim
+              nvim-treesitter-context
+              nvim-treesitter-textobjects
+              nvim-treesitter.withAllGrammars
+              # This is for if you only want some of the grammars
+              # (nvim-treesitter.withPlugins (
+              #   plugins: with plugins; [
+              #     nix
+              #     lua
+              #   ]
+              # ))
 
-            mini-ai
-            mini-icons
-            mini-pairs
-          ];
+              mini-ai
+              mini-icons
+              mini-pairs
+            ])
+            ++ (if theme != null then theme.plugins or [ ] else [ ]);
 
           # Runtime dependencies. This is thing like tree-sitter, lsps or programs
           # like ripgrep.
@@ -136,13 +147,7 @@
             universal-ctags
             ast-grep
             curl
-            # NOTE:
-            # lazygit
-            # Apparently lazygit when launched via snacks cant create its own config file
-            # but we can add one from nix!
-            (pkgs.writeShellScriptBin "lazygit" ''
-              exec ${lazygit}/bin/lazygit --use-config-file ${pkgs.writeText "lazygit_config.yml" ""} "$@"
-            '')
+            lazygit
             ripgrep
             fd
             imagemagick
@@ -241,11 +246,23 @@
             suffix-LD = false;
           };
         };
+
+      mkNeovim =
+        {
+          system,
+          pkgs ? nixpkgs.legacyPackages.${system},
+          theme ? null,
+        }:
+        nixPatch.configWrapper.${system} {
+          configuration = configuration theme;
+          inherit extra_pkg_config name;
+        };
     in
-    forEachSystem (system: {
-      packages.default = nixPatch.configWrapper.${system} {
-        inherit configuration extra_pkg_config name;
-      };
+    {
+      lib.mkNeovim = mkNeovim;
+    }
+    // forEachSystem (system: {
+      packages.default = mkNeovim { inherit system; };
 
       formatter = nixpkgs.legacyPackages.${system}.nixfmt;
     });
