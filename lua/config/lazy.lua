@@ -49,12 +49,13 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.linting.eslint" },
 
+    -- import/override with your plugins
+    { import = "plugins" },
+
     -- disable mason.nvim while using nix
     -- precompiled binaries do not agree with nixos, and we can just make nix install this stuff for us.
     { "mason-org/mason-lspconfig.nvim", enabled = set(true, false) },
     { "mason-org/mason.nvim", enabled = set(true, false) },
-    -- import/override with your plugins
-    { import = "plugins" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
