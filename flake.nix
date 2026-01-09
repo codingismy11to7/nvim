@@ -17,10 +17,17 @@
       # We do this so that we ensure neovim nightly actually updates
       # inputs.neovim-nightly-overlay.follows = "neovim-nightly-overlay";
     };
+
+    blink.url = "github:Saghen/blink.cmp";
   };
 
   outputs =
-    { nixpkgs, nixPatch, ... }:
+    {
+      blink,
+      nixpkgs,
+      nixPatch,
+      ...
+    }:
     let
       # Copied from flake utils
       eachSystem =
@@ -58,7 +65,7 @@
 
       # Easily configure a custom name, this will affect the name of the standard
       # executable, you can add as many aliases as you'd like in the configuration.
-      name = "nvim";
+      name = "Neovim";
 
       # Any custom package config you would like to do.
       extra_pkg_config = {
@@ -69,6 +76,8 @@
         { pkgs, system, ... }:
         let
           patchUtils = nixPatch.patchUtils.${pkgs.stdenv.hostPlatform.system};
+
+          blink-pkg = blink.packages.${system}.default;
         in
         {
           # The path to your neovim configuration.
@@ -94,11 +103,9 @@
             nui-nvim
             nvim-lint
             nvim-lspconfig
-            nvim-treesitter-context
-            nvim-treesitter-textobjects
             nvim-ts-autotag
             ts-comments-nvim
-            blink-cmp
+            blink-pkg
             nvim-web-devicons
             persistence-nvim
             plenary-nvim
@@ -112,6 +119,7 @@
             which-key-nvim
             snacks-nvim
             zellij-nvim
+            nvim-treesitter-context
             nvim-treesitter-textobjects
             nvim-treesitter.withAllGrammars
             # This is for if you only want some of the grammars
@@ -181,6 +189,7 @@
 
           # Aliases for the patched config
           aliases = [
+            "nvim"
             "vim"
             "vi"
           ];
@@ -211,7 +220,7 @@
 
           # Custom subsitutions you want the patcher to make. Custom subsitutions
           # can be generated using
-          customSubs = with patchUtils; [ ];
+          customSubs = (patchUtils.githubUrlSub "saghen/blink.cmp" blink-pkg);
           # For example, if you want to add a plugin with the short url
           # "cool/plugin" which is in nixpkgs as plugin-nvim you would do:
           # ++ (patchUtils.githubUrlSub "cool/plugin" plugin-nvim);
@@ -221,17 +230,10 @@
           # For more examples look here: https://github.com/NicoElbers/nixPatch-nvim/blob/main/subPatches.nix
 
           settings = {
-            # Enable the NodeJs provider
-            withNodeJs = false;
-
-            # Enable the ruby provider
+            withNodeJs = true;
+            withPython3 = true;
             withRuby = false;
-
-            # Enable the perl provider
             withPerl = false;
-
-            # Enable the python3 provider
-            withPython3 = false;
 
             # Any extra name
             extraName = "";
