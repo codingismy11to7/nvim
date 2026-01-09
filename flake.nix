@@ -17,13 +17,10 @@
       # We do this so that we ensure neovim nightly actually updates
       # inputs.neovim-nightly-overlay.follows = "neovim-nightly-overlay";
     };
-
-    blink.url = "github:Saghen/blink.cmp";
   };
 
   outputs =
     {
-      blink,
       nixpkgs,
       nixPatch,
       ...
@@ -76,8 +73,6 @@
         { pkgs, system, ... }:
         let
           patchUtils = nixPatch.patchUtils.${pkgs.stdenv.hostPlatform.system};
-
-          blink-pkg = blink.packages.${system}.default;
         in
         {
           # The path to your neovim configuration.
@@ -205,7 +200,7 @@
           # can be generated using
           customSubs =
             [ ]
-            ++ (patchUtils.githubUrlSub "saghen/blink.cmp" blink-pkg)
+            ++ (patchUtils.githubUrlSub "saghen/blink.cmp" pkgs.vimPlugins.blink-cmp)
             ++ (patchUtils.githubUrlSub "treesitter-context/nvim-treesitter-context" pkgs.vimPlugins.nvim-treesitter-context);
           # For example, if you want to add a plugin with the short url
           # "cool/plugin" which is in nixpkgs as plugin-nvim you would do:
