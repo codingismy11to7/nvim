@@ -133,23 +133,6 @@
             mini-ai
             mini-icons
             mini-pairs
-
-            # sometimes you have to fix some names
-            # { plugin = catppuccin-nvim; name = "catppuccin"; }
-            # {
-            #   plugin = mini-ai;
-            #   name = "mini.ai";
-            # }
-            # {
-            #   plugin = mini-icons;
-            #   name = "mini.icons";
-            # }
-            # {
-            #   plugin = mini-pairs;
-            #   name = "mini.pairs";
-            # }
-            # you could do this within the lazy spec instead if you wanted
-            # and get the new names from `:NixCats pawsible` debug command
           ];
 
           # Runtime dependencies. This is thing like tree-sitter, lsps or programs
@@ -220,7 +203,10 @@
 
           # Custom subsitutions you want the patcher to make. Custom subsitutions
           # can be generated using
-          customSubs = (patchUtils.githubUrlSub "saghen/blink.cmp" blink-pkg);
+          customSubs =
+            [ ]
+            ++ (patchUtils.githubUrlSub "saghen/blink.cmp" blink-pkg)
+            ++ (patchUtils.githubUrlSub "treesitter-context/nvim-treesitter-context" pkgs.vimPlugins.nvim-treesitter-context);
           # For example, if you want to add a plugin with the short url
           # "cool/plugin" which is in nixpkgs as plugin-nvim you would do:
           # ++ (patchUtils.githubUrlSub "cool/plugin" plugin-nvim);
@@ -265,5 +251,7 @@
       packages.default = nixPatch.configWrapper.${system} {
         inherit configuration extra_pkg_config name;
       };
+
+      formatter = nixpkgs.legacyPackages.${system}.nixfmt;
     });
 }
