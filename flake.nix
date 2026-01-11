@@ -165,6 +165,7 @@
             tree-sitter
             vscode-langservers-extracted
             vtsls
+            wl-clipboard
           ];
 
           # Environment variables set during neovim runtime.
