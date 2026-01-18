@@ -154,11 +154,14 @@
             shfmt
             stdenv.cc
             alejandra
+            deadnix
+            dockerfile-language-server
             lua-language-server
             markdown-toc
             markdownlint-cli2
             marksman
             nil
+            nixfmt
             statix
             stylua
             taplo
