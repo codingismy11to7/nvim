@@ -95,7 +95,6 @@
               LazyVim
               bufferline-nvim
               lazydev-nvim
-              copilot-vim
               conform-nvim
               flash-nvim
               friendly-snippets
