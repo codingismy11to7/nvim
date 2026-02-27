@@ -145,6 +145,7 @@
           runtimeDeps = with pkgs; [
             universal-ctags
             ast-grep
+            biome
             curl
             lazygit
             ripgrep
